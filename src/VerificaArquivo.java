@@ -13,14 +13,23 @@ import java.util.Scanner;
 
 // Realiza todas operações básicas de arquivo
 public class VerificaArquivo {
-    Scanner s = new Scanner (System.in);
+    private static VerificaArquivo verificaArquivo;
     private LinkedList lista;
     private boolean arquivoCarregado;
+    Scanner s = new Scanner (System.in);
 
     // Construtor
-    public VerificaArquivo()
+    private VerificaArquivo() {
+        lista = new LinkedList();
+    }
+
+    public static VerificaArquivo getInstancia()
     {
-        this.lista = new LinkedList(); // Inicializa a lista
+        if (verificaArquivo == null)
+        {
+            verificaArquivo = new VerificaArquivo();
+        }
+        return verificaArquivo;
     }
 
     public void carregaArquivo(String arquivo)

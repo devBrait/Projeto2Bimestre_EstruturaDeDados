@@ -8,8 +8,15 @@ Nome: Vinícius Brait Lorimier RA: 10420046
 public class VerificaEntrada {
 
     Menu menu = new Menu();
-    VerificaArquivo verificaArquivo = new VerificaArquivo();
-    VerificaComando verificaComando = new VerificaComando();
+    VerificaArquivo verificaArquivo = VerificaArquivo.getInstancia();
+    VerificaComando verificaComando;
+    Interpretador interpretador;
+
+    public VerificaEntrada()
+    {
+        this.interpretador = new Interpretador();
+        this.verificaComando = new VerificaComando(interpretador);
+    }
 
     public void isValid(String expressao)
     {

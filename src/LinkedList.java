@@ -26,12 +26,13 @@ public class LinkedList{
     public LinkedList() {
         this.head = null;
         this.isModified = false;
-        this.proximaLinha = 10;
+        this.proximaLinha = 0;
     }
 
     // Adiciona uma nova linha no final da lista
     public void addLine(String line) {
-        Node newNode = new Node(line, proximaLinha);
+        int linha = Integer.parseInt(line.substring(0, 2));
+        Node newNode = new Node(line, linha);
         if (head == null) {
             head = newNode;
         } else {
@@ -41,7 +42,7 @@ public class LinkedList{
             }
             atual.proximo = newNode;
         }
-        proximaLinha += 10;
+        proximaLinha += linha;
         isModified = true;
     }
 
@@ -94,7 +95,7 @@ public class LinkedList{
         }
 
         while (current != null) {
-            System.out.printf("%d: %s%n", current.numeroLinha, current.comando);
+            System.out.printf("%s%n", current.comando);
             current = current.proximo;
         }
     }
