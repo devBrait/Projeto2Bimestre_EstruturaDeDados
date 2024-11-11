@@ -21,11 +21,11 @@ public class Interpretador {
     // Metodo auxiliar para inicializar os registradores
     private void inicializarRegistradores()
     {
-        a = b = c = d = e = f = g = h = i = j = k = l = m = n = o = p = q = r = s = t = u = v = w = x = y = z = 0;
+        a = b = c = d = e = f = g = h = i = j = k = l = m = n = o = p = q = r = s = t = u = v = w = x = y = z = null;
     }
 
     // Registradores de 'a' até 'z'
-    private int a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z;
+    private Integer a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z;
 
     // Copia o valor de y para o registrador x
     public void executeMov(String x, String y)
@@ -60,6 +60,13 @@ public class Interpretador {
     // Subtrai o valor de y do registrador x
     public void executeSub(char x, String y)
     {
+        Integer valorX = getValorRegistrador(x);
+        if(valorX == null)
+        {
+            System.out.println(String.format("Erro: registrador %s inválido.\n", x));
+            return;
+        }
+
         if(isNumero(y))
         {
             setValorRegistrador(x, getValorRegistrador(x) - Integer.parseInt(y));
@@ -88,9 +95,18 @@ public class Interpretador {
     }
 
     // Se o valor no registrador x for diferente de zero, pula para a linha de número y
-    public void executeJnz(char x, int linhaDestino, int linhaAtual)
+    public void executeJnz(char x, String linhaDestino, int linhaAtual)
     {
         int registrador = getValorRegistrador(x);
+        int linhaDestinoNumero = 0;
+
+        if(isNumero(linhaDestino))
+        {
+            linhaDestinoNumero = Integer.parseInt(linhaDestino);
+        }else
+        {
+            linhaDestinoNumero = getValorRegistrador(linhaDestino.charAt(0));
+        }
 
         // Se o valor do registrador for zero, não entra no laço
         LinkedList lista = verificaArquivo.getLista();
@@ -106,7 +122,7 @@ public class Interpretador {
                 int linhaComando = Integer.parseInt(partes[0]);
 
                 // Se a linha do comando estiver entre a linha de destino e a linha atual
-                if (linhaComando >= linhaDestino && linhaComando <= linhaAtual){
+                if (linhaComando >= linhaDestinoNumero && linhaComando <= linhaAtual){
                     // Chama a função de interpretação do comando
                     verificaComando.toInterpretacao(comando);
                 }
@@ -131,12 +147,19 @@ public class Interpretador {
     }
 
     // Exibe o valor do registrador x em tela
-    public void executeOut(char x) {
+    public void executeOut(char x)
+    {
+        Integer valorX = getValorRegistrador(x);
+        if(valorX == null)
+        {
+            System.out.println(String.format("Erro: registrador %s inválido.\n", x));
+            return;
+        }
         System.out.println(getValorRegistrador(x));
     }
 
     // Métodos auxiliares privados
-    private int getValorRegistrador(char reg) {
+    private Integer getValorRegistrador(char reg) {
         switch (reg) {
             case 'a': return a;
             case 'b': return b;
@@ -164,7 +187,7 @@ public class Interpretador {
             case 'x': return x;
             case 'y': return y;
             case 'z': return z;
-            default: return 0; // Caso inválido
+            default: return null; // Caso inválido
         }
     }
 

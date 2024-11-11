@@ -5,10 +5,7 @@ Nome: Guilherme Teodoro de Oliveira RA: 10425362
 Nome: Vinícius Brait Lorimier RA: 10420046
 
  */
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 // Realiza todas operações básicas de arquivo
@@ -16,10 +13,12 @@ public class VerificaArquivo {
     private static VerificaArquivo verificaArquivo;
     private LinkedList lista;
     private boolean arquivoCarregado;
+    private String nomeArquivoCarregado;
     Scanner s = new Scanner (System.in);
 
     // Construtor
-    private VerificaArquivo() {
+    private VerificaArquivo()
+    {
         lista = new LinkedList();
     }
 
@@ -34,9 +33,10 @@ public class VerificaArquivo {
 
     public void carregaArquivo(String arquivo)
     {
-        try {
+        LinkedList novaLista = new LinkedList();  // Cria uma nova lista temporária vazia
+        try
+        {
             // Limpar a lista antes de carregar novo arquivo
-            lista = new LinkedList(); // Cria uma nova lista vazia
 
             // Criar um BufferedReader para ler o arquivo
             BufferedReader reader = new BufferedReader(new FileReader(arquivo));
@@ -47,18 +47,31 @@ public class VerificaArquivo {
             // Ler o arquivo linha por linha
             while ((comando = reader.readLine()) != null)
             {
-                // Adicionar cada linha à lista
-                lista.addLine(comando);
+                try
+                {
+                    // Adicionar cada linha à lista
+                    lista.addLine(comando);
+                    novaLista.addLine(comando);
+                }catch (Exception e)
+                {
+                    // Erro durante a gravação de linhas
+                    System.out.println("Erro: " + e.getMessage());
+                    lista.clearList();
+                }
             }
-
             // Fechar o leitor
             reader.close();
 
             // Resetar a flag de modificação após carregar o arquivo
+            if(arquivoCarregado)
+            {
+                lista = novaLista;
+            }
             lista.clearModification();
 
             // Confirmação de carregamento
-            System.out.println("Arquivo" + "("+arquivo+") carregado com sucesso.");
+            System.out.println("Arquivo" + " ("+arquivo+") carregado com sucesso.");
+            nomeArquivoCarregado = arquivo;
             arquivoCarregado = true;
 
         } catch (FileNotFoundException e)
@@ -67,6 +80,63 @@ public class VerificaArquivo {
         } catch (IOException e)
         {
             System.out.println("Erro ao abrir o arquivo: " + arquivo);
+        }
+    }
+
+    public void salvaCodigoFonte()
+    {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivoCarregado)))
+        {
+            lista.getNextCommand();
+            lista.resetaIterator();
+            String comando;
+            while ((comando = lista.getNextCommand()) != null)
+            {
+                writer.write(comando);
+                writer.newLine();
+            }
+
+            lista.clearModification();
+            System.out.println("Arquivo" + " ("+nomeArquivoCarregado+") salvo com sucesso.");
+
+        } catch (IOException e)
+        {
+            System.out.println("Erro ao salvar o arquivo: " + nomeArquivoCarregado);
+        }
+    }
+
+    public void salvaCodigoFonteEmArquivo(String arquivo) {
+        File file = new File(arquivo);
+
+        // Verifica se o arquivo existe e pede confirmação caso precise sobrescrever
+        if (file.exists())
+        {
+            System.out.println("O arquivo já existe. Deseja sobrescrever? (S/N)");
+            String resposta = s.nextLine().trim().toUpperCase();
+
+            if (!resposta.equals("S"))
+            {
+                System.out.println("Arquivo não salvo.");
+                return;
+            }
+        }
+
+        // Tentativa de salvar o arquivo
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
+        {
+            lista.getNextCommand();
+            lista.resetaIterator();
+            String comando;
+            while ((comando = lista.getNextCommand()) != null)
+            {
+                writer.write(comando);
+                writer.newLine();
+            }
+
+            System.out.println("Arquivo" + " ("+arquivo+") salvo com sucesso.");
+
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar o arquivo: " + arquivo);
         }
     }
 
@@ -85,6 +155,10 @@ public class VerificaArquivo {
         lista.retornaLista();
     }
 
+    public void limpaLista(){
+        lista.clearList();
+    }
+
     public boolean confirmarSalvamento()
     {
         System.out.println("Deseja salvar? (S/N)");
@@ -98,6 +172,16 @@ public class VerificaArquivo {
         }
 
         return expressao.equals("S");
+    }
+
+    public boolean comparaArquivos(String arquivo)
+    {
+         if(arquivo.equals(nomeArquivoCarregado))
+         {
+             return true;
+         }
+
+         return false;
     }
 
     public boolean arquivoCarregado()

@@ -75,7 +75,7 @@ public class VerificaComando {
                 {
                     try
                     {
-                        int linhaDestino = Integer.parseInt(partes[3]);
+                        String linhaDestino = partes[3];
                         int linhaAtual = Integer.parseInt(partes[0]);
                         interpretador.executeJnz(partes[2].charAt(0), linhaDestino, linhaAtual);
                     } catch (NumberFormatException e) {

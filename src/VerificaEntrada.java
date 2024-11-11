@@ -35,11 +35,18 @@ public class VerificaEntrada {
                         System.out.println("Arquivo atual"+ "("+partes[1]+") contém alterações não salvas.");
                         if(verificaArquivo.confirmarSalvamento())
                         {
-                            // Roda outra rotina antes que salva o arquivo atual
-                            verificaArquivo.carregaArquivo(partes[1]);
+                            verificaArquivo.salvaCodigoFonte();
+                            System.out.print("\n");
                         }
                     }
-                    verificaArquivo.carregaArquivo(partes[1]);
+                    if(verificaArquivo.comparaArquivos(partes[1]))
+                    {
+                        verificaArquivo.limpaLista();
+                        verificaArquivo.carregaArquivo(partes[1]);
+                    }else{
+                        verificaArquivo.carregaArquivo(partes[1]);
+                    }
+
                 } else
                 {
                     System.out.println("Não é possível carregar um arquivo assim.");
@@ -70,12 +77,12 @@ public class VerificaEntrada {
                         }
                     }else
                     {
-                        System.out.println("Nenhum arquivo foi carregado ainda.");
+                        System.out.println("Nenhum arquivo foi carregado!");
                     }
 
                 } else
                 {
-                    System.out.println("Comando RUN não deve ter parâmetros");
+                    System.out.println("Comando RUN não deve ter parâmetros.");
                 }
                 break;
             case "INS":
@@ -85,7 +92,16 @@ public class VerificaEntrada {
                     // Verifica se o segundo parâmetro é um número
                     if (partes[1].matches("\\d+"))
                     {
-                        System.out.println("Comando INS válido - Inserir linha " + partes[1]);
+                        if(verificaArquivo.arquivoCarregado())
+                        {
+                            LinkedList lista = verificaArquivo.getLista();
+                            lista.resetaIterator();
+                            String expressaoNova = expressao.substring(4);
+                            lista.addLineAt(expressaoNova.toLowerCase(), Integer.parseInt(partes[1]));
+                        }else
+                        {
+                            System.out.println("Nenhum arquivo foi carregado!");
+                        }
                     } else
                     {
                         System.out.println("Formato de INS inválido. Use INS <LINHA> <INSTRUÇÃO>");
@@ -102,16 +118,33 @@ public class VerificaEntrada {
                     // Formato DEL<LINHA> ou DEL <LINHA>
                     if (partes[1].matches("\\d+"))
                     {
-                        System.out.println("Comando DEL válido para linha " + partes[1]);
+                        if(verificaArquivo.arquivoCarregado())
+                        {
+                            LinkedList lista = verificaArquivo.getLista();
+                            lista.resetaIterator();
+                            lista.delLine(Integer.parseInt(partes[1]));
+                        }else
+                        {
+                            System.out.println("Nenhum arquivo foi carregado!");
+                        }
                     } else
                     {
                         System.out.println("Formato de DEL inválido. Use DEL<LINHA> ou DEL <LINHA_I> <LINHA_F>");
                     }
-                } else if (partes.length == 3) {
+                } else if (partes.length == 3)
+                {
                     // Formato DEL <LINHA_I> <LINHA_F>
                     if (partes[1].matches("\\d+") && partes[2].matches("\\d+"))
                     {
-                        System.out.println("Comando DEL válido para intervalo de linhas " + partes[1] + " a " + partes[2]);
+                        if(verificaArquivo.arquivoCarregado())
+                        {
+                            LinkedList lista = verificaArquivo.getLista();
+                            lista.resetaIterator();
+                            lista.delLinesInRange(Integer.parseInt(partes[1]), Integer.parseInt(partes[2]));
+                        }else
+                        {
+                            System.out.println("Nenhum arquivo foi carregado!");
+                        }
                     } else
                     {
                         System.out.println("Formato de DEL inválido. Use DEL <LINHA_I> <LINHA_F>");
@@ -121,23 +154,40 @@ public class VerificaEntrada {
                     System.out.println("Formato de DEL inválido.");
                 }
                 break;
-
             case "SAVE":
                 // Tratar dois formatos de SAVE: SAVE ou SAVE <ARQUIVO.ED1>
-                if (partes.length == 1)
+                if(verificaArquivo.arquivoCarregado())
                 {
-                    System.out.println("Comando SAVE válido - Salvar código fonte");
-                } else if (partes.length == 2 && partes[1].matches(".*\\.ED1"))
+                    if (partes.length == 1)
+                    {
+                        verificaArquivo.salvaCodigoFonte();
+                    } else if (partes.length == 2 && partes[1].matches(".*\\.ED1"))
+                    {
+                        verificaArquivo.salvaCodigoFonteEmArquivo(partes[1]);
+                    } else
+                    {
+                        System.out.println("Formato de SAVE inválido. Use SAVE ou SAVE <ARQUIVO.ED1>");
+                    }
+                }else
                 {
-                    System.out.println("Comando SAVE válido para arquivo: " + partes[1]);
-                } else
-                {
-                    System.out.println("Formato de SAVE inválido. Use SAVE ou SAVE <ARQUIVO.ED1>");
+                    System.out.println("Nenhum arquivo foi carregado!");
                 }
                 break;
             case "EXIT":
                 if (partes.length == 1)
                 {
+                    if(verificaArquivo.isModified())
+                    {
+                        System.out.println("Arquivo atual contém alterações não salvas.");
+                        if(verificaArquivo.confirmarSalvamento())
+                        {
+                            verificaArquivo.salvaCodigoFonte();
+                        }else
+                        {
+                            System.out.println("Muito obrigado por utilizar nosso interpretador!");
+                            System.exit(0);
+                        }
+                    }
                     System.out.println("Muito obrigado por utilizar nosso interpretador!");
                     System.exit(0);
 
