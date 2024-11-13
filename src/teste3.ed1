@@ -1,0 +1,9 @@
+10 mov m 8
+20 mov n 6
+30 add m n
+40 inc n
+50 dec m
+60 jnz m 40
+70 mov o n
+80 mul o 3
+90 out o

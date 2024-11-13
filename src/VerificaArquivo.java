@@ -31,13 +31,11 @@ public class VerificaArquivo {
         return verificaArquivo;
     }
 
-    public void carregaArquivo(String arquivo)
+    public void carregaArquivo(String arquivo) throws Exception
     {
         LinkedList novaLista = new LinkedList();  // Cria uma nova lista temporária vazia
         try
         {
-            // Limpar a lista antes de carregar novo arquivo
-
             // Criar um BufferedReader para ler o arquivo
             BufferedReader reader = new BufferedReader(new FileReader(arquivo));
 
@@ -50,30 +48,24 @@ public class VerificaArquivo {
                 try
                 {
                     // Adicionar cada linha à lista
-                    lista.addLine(comando);
-                    novaLista.addLine(comando);
+                    novaLista.insert(comando);
                 }catch (Exception e)
                 {
                     // Erro durante a gravação de linhas
-                    System.out.println("Erro: " + e.getMessage());
-                    lista.clearList();
+                    throw new Exception("Erro: " + e.getMessage());
                 }
             }
             // Fechar o leitor
             reader.close();
 
-            // Resetar a flag de modificação após carregar o arquivo
-            if(arquivoCarregado)
-            {
-                lista = novaLista;
-            }
-            lista.clearModification();
 
             // Confirmação de carregamento
             System.out.println("Arquivo" + " ("+arquivo+") carregado com sucesso.");
             nomeArquivoCarregado = arquivo;
             arquivoCarregado = true;
-
+            lista = novaLista;
+            // Resetar a flag de modificação após carregar o arquivo
+            lista.clearModification();
         } catch (FileNotFoundException e)
         {
             System.out.println("Erro: Arquivo não encontrado - " + arquivo);
@@ -152,7 +144,19 @@ public class VerificaArquivo {
 
     public void retornaLista()
     {
-        lista.retornaLista();
+        try
+        {
+            lista.retornaLista();
+        } catch (Exception e)
+        {
+           if(arquivoCarregado)
+           {
+               System.out.println("Nenhum código foi inserido no arquivo.");
+           }else
+           {
+               System.out.println(e.getMessage());
+           }
+        }
     }
 
     public void limpaLista(){

@@ -41,10 +41,23 @@ public class VerificaEntrada {
                     }
                     if(verificaArquivo.comparaArquivos(partes[1]))
                     {
-                        verificaArquivo.limpaLista();
-                        verificaArquivo.carregaArquivo(partes[1]);
-                    }else{
-                        verificaArquivo.carregaArquivo(partes[1]);
+                        try
+                        {
+                            verificaArquivo.limpaLista();
+                            verificaArquivo.carregaArquivo(partes[1]);
+                        }catch (Exception e)
+                        {
+                            System.out.println(e.getMessage());
+                        }
+                    }else
+                    {
+                        try
+                        {
+                            verificaArquivo.carregaArquivo(partes[1]);
+                        }catch (Exception e)
+                        {
+                            System.out.println(e.getMessage());
+                        }
                     }
 
                 } else
@@ -71,6 +84,15 @@ public class VerificaEntrada {
                         LinkedList lista = verificaArquivo.getLista();
                         lista.resetaIterator();
                         String comando;
+                        verificaComando.clearRegistradores();
+
+                        if(lista.getNextCommand() == null)
+                        {
+                            System.out.println("Nenhum código foi inserido no arquivo.");
+                            return;
+                        }
+
+                        lista.resetaIterator();
                         while ((comando = lista.getNextCommand()) != null)
                         {
                             verificaComando.toInterpretacao(comando);
@@ -97,7 +119,7 @@ public class VerificaEntrada {
                             LinkedList lista = verificaArquivo.getLista();
                             lista.resetaIterator();
                             String expressaoNova = expressao.substring(4);
-                            lista.addLineAt(expressaoNova.toLowerCase(), Integer.parseInt(partes[1]));
+                            lista.insertAt(expressaoNova.toLowerCase(), Integer.parseInt(partes[1]));
                         }else
                         {
                             System.out.println("Nenhum arquivo foi carregado!");
@@ -122,7 +144,7 @@ public class VerificaEntrada {
                         {
                             LinkedList lista = verificaArquivo.getLista();
                             lista.resetaIterator();
-                            lista.delLine(Integer.parseInt(partes[1]));
+                            lista.delete(Integer.parseInt(partes[1]));
                         }else
                         {
                             System.out.println("Nenhum arquivo foi carregado!");
@@ -140,7 +162,7 @@ public class VerificaEntrada {
                         {
                             LinkedList lista = verificaArquivo.getLista();
                             lista.resetaIterator();
-                            lista.delLinesInRange(Integer.parseInt(partes[1]), Integer.parseInt(partes[2]));
+                            lista.deleteInRange(Integer.parseInt(partes[1]), Integer.parseInt(partes[2]));
                         }else
                         {
                             System.out.println("Nenhum arquivo foi carregado!");

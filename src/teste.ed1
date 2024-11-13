@@ -1,4 +1,5 @@
 10 mov a 5
+10 mov b 3
 20 mov b 2
 60 mov x a
 70 sub x 2

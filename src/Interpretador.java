@@ -1,233 +1,371 @@
+/*
+
+Nome: Eduardo Henrique de Souza Cruz RA: 10358690
+Nome: Guilherme Teodoro de Oliveira RA: 10425362
+Nome: Vinícius Brait Lorimier RA: 10420046
+
+ */
 public class Interpretador {
 
     VerificaArquivo verificaArquivo = VerificaArquivo.getInstancia();
-    private VerificaComando verificaComando;
+    private final VerificaComando verificaComando;
 
     // Construtor padrão
     public Interpretador()
     {
         this.verificaComando = new VerificaComando(this);
-        inicializarRegistradores();
     }
 
     // Construtor com injeção de dependência para VerificaComando
     public Interpretador(VerificaComando verificaComando)
     {
         this.verificaComando = verificaComando;
-        // Inicializando os registradores com valor 0
-        inicializarRegistradores();
     }
 
-    // Metodo auxiliar para inicializar os registradores
-    private void inicializarRegistradores()
-    {
-        a = b = c = d = e = f = g = h = i = j = k = l = m = n = o = p = q = r = s = t = u = v = w = x = y = z = null;
-    }
 
     // Registradores de 'a' até 'z'
-    private Integer a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z;
+    private final Integer[] registradores = new Integer[26];
 
     // Copia o valor de y para o registrador x
-    public void executeMov(String x, String y)
+    public void executeMov(String x, String y, String comando) throws Exception
     {
-        if (isNumero(y))
+        try
         {
-            setValorRegistrador(x.charAt(0), Integer.parseInt(y));
-        } else
+            if (isNumero(y))
+            {
+                setValorRegistrador(x.charAt(0), Integer.parseInt(y));
+            } else if (getValorRegistrador(y.charAt(0)) == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", y);
+                System.out.println("Linha "+comando);
+                return;
+            } else
+            {
+                setValorRegistrador(x.charAt(0), getValorRegistrador(y.charAt(0)));
+            }
+        } catch (Exception ex)
         {
-            setValorRegistrador(x.charAt(0), getValorRegistrador(y.charAt(0)));
+            throw new Exception("Erro: impossível executar o comando mov.");
         }
     }
 
     // Incrementa o valor de x em 1
-    public void executeInc(char x)
+    public void executeInc(String x, String comando) throws Exception
     {
-        setValorRegistrador(x, getValorRegistrador(x) + 1);
+        try
+        {
+            if(isNumero(x))
+            {
+                System.out.println("Um registrador deve ser informado.");
+                return;
+            }
+
+            Integer valorX = getValorRegistrador(x.charAt(0));
+
+            if (valorX == null) {
+                System.out.println("Registrador " + x + "não definido ainda.");
+                System.out.println("Linha "+comando);
+            }
+            setValorRegistrador(x.charAt(0), valorX + 1);
+        }catch (Exception ex)
+        {
+            throw new Exception("Erro: impossível executar o comando inc.");
+        }
     }
 
     // Decrementa o valor de x em 1
-    public void executeDec(char x)
+    public void executeDec(String x, String comando) throws Exception
     {
-        setValorRegistrador(x, getValorRegistrador(x) - 1);
+        try
+        {
+            if(isNumero(x))
+            {
+                System.out.println("Um registrador deve ser informado.");
+                return;
+            }
+
+            Integer valorX = getValorRegistrador(x.charAt(0));
+            if (valorX == null)
+            {
+                System.out.println("Registrador " + x + "não definido ainda.");
+                System.out.println("Linha "+comando);
+            }
+            setValorRegistrador(x.charAt(0), valorX - 1);
+        }catch (Exception ex)
+        {
+            throw new Exception("Erro: impossível executar o comando dec.");
+        }
     }
 
     // Adiciona o valor de y ao registrador x
-    public void executeAdd(char x, char y)
+    public void executeAdd(char x, String y, String comando) throws Exception
     {
-        setValorRegistrador(x, getValorRegistrador(x) + getValorRegistrador(y));
+        try
+        {
+            Integer valorX = getValorRegistrador(x);
+            if (valorX == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", x);
+                System.out.println("Linha "+comando);
+                return;
+            }
+
+            if (isNumero(y))
+            {
+                setValorRegistrador(x, getValorRegistrador(x) + Integer.parseInt(y));
+            } else if (getValorRegistrador(y.charAt(0)) == null)
+            {
+                System.out.println("Registrador " + y + "não definido ainda.");
+                System.out.println("Linha "+comando);
+            } else
+            {
+                setValorRegistrador(x, getValorRegistrador(x) + getValorRegistrador(y.charAt(0)));
+            }
+        }catch (Exception ex)
+        {
+            throw new Exception("Erro: impossível executar o comando add.");
+        }
     }
 
     // Subtrai o valor de y do registrador x
-    public void executeSub(char x, String y)
+    public void executeSub(char x, String y, String comando) throws Exception
     {
-        Integer valorX = getValorRegistrador(x);
-        if(valorX == null)
+        try
         {
-            System.out.println(String.format("Erro: registrador %s inválido.\n", x));
-            return;
-        }
+            Integer valorX = getValorRegistrador(x);
+            if (valorX == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", x);
+                System.out.println("Linha "+comando);
+                return;
+            }
 
-        if(isNumero(y))
+            if (isNumero(y))
+            {
+                setValorRegistrador(x, getValorRegistrador(x) - Integer.parseInt(y));
+            } else if (getValorRegistrador(y.charAt(0)) == null)
+            {
+                System.out.println("Registrador " + y + "não definido ainda.");
+                System.out.println("Linha "+comando);
+            } else
+            {
+                setValorRegistrador(x, getValorRegistrador(x) - getValorRegistrador(y.charAt(0)));
+            }
+        }catch (Exception ex)
         {
-            setValorRegistrador(x, getValorRegistrador(x) - Integer.parseInt(y));
-        }else
-        {
-            setValorRegistrador(x, getValorRegistrador(x) - getValorRegistrador(y.charAt(0)));
+            throw new Exception("Erro: impossível executar o comando sub.");
         }
     }
 
     // Multiplica o valor de x pelo valor de y
-    public void executeMul(char x, char y)
+    public void executeMul(char x, String y, String comando) throws Exception
     {
-        setValorRegistrador(x, getValorRegistrador(x) * getValorRegistrador(y));
+        try
+        {
+            Integer valorX = getValorRegistrador(x);
+            if (valorX == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", x);
+                System.out.println("Linha "+comando);
+                return;
+            }
+
+            if (isNumero(y))
+            {
+                setValorRegistrador(x, getValorRegistrador(x) * Integer.parseInt(y));
+            } else if (getValorRegistrador(y.charAt(0)) == null)
+            {
+                System.out.println("Registrador " + y + "não definido ainda.");
+                System.out.println("Linha "+comando);
+            } else
+            {
+                setValorRegistrador(x, getValorRegistrador(x) * getValorRegistrador(y.charAt(0)));
+            }
+        }catch (Exception e)
+        {
+            throw new Exception("Erro: impossível executar o comando mul.");
+        }
     }
 
     // Divide o valor de x pelo valor de y
-    public void executeDiv(char x, char y)
+    public void executeDiv(char x, String y, String comando) throws Exception
     {
-        if (getValorRegistrador(y) != 0)
+        try
         {
-            setValorRegistrador(x, getValorRegistrador(x) / getValorRegistrador(y));
-        } else
+            Integer valorX = getValorRegistrador(x);
+
+            if (valorX == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", x);
+                System.out.println("Linha "+comando);
+                return;
+            }
+
+            if (isNumero(y))
+            {
+                // Se y é um número, verifica se é zero
+                int valorY = Integer.parseInt(y);
+                if (valorY == 0)
+                {
+                    System.out.println("Erro: Divisão por zero!");
+                    return;
+                }
+                setValorRegistrador(x, valorX / valorY);
+            } else
+            {
+                // Se y não é um número, verifica se é um registrador válido
+                Integer valorYRegistrador = getValorRegistrador(y.charAt(0));
+                if (valorYRegistrador == null)
+                {
+                    System.out.printf("Erro: registrador %s inválido.%n", y);
+                    System.out.println("Linha: " + comando);
+                    return;
+                }
+
+                // Verifica se o valor do registrador y é zero
+                if (valorYRegistrador == 0)
+                {
+                    System.out.println("Erro: Divisão por zero!");
+                    return;
+                }
+
+                setValorRegistrador(x, valorX / valorYRegistrador);
+            }
+        }catch (Exception e)
         {
-            System.out.println("Erro: Divisão por zero!");
+            throw new Exception("Erro: impossível executar o comando div.");
         }
     }
 
     // Se o valor no registrador x for diferente de zero, pula para a linha de número y
-    public void executeJnz(char x, String linhaDestino, int linhaAtual)
+    public void executeJnz(char x, String linhaDestino, int linhaAtual, String comandoLinha)
+            throws Exception
     {
-        int registrador = getValorRegistrador(x);
-        int linhaDestinoNumero = 0;
+        try {
+            Integer valorRegistrador = getValorRegistrador(x);
+            Integer linhaDestinoNumero = null;
 
-        if(isNumero(linhaDestino))
-        {
-            linhaDestinoNumero = Integer.parseInt(linhaDestino);
-        }else
-        {
-            linhaDestinoNumero = getValorRegistrador(linhaDestino.charAt(0));
-        }
-
-        // Se o valor do registrador for zero, não entra no laço
-        LinkedList lista = verificaArquivo.getLista();
-        if (registrador != 0)
-        {
-            String comando;
-            lista.resetaIterator();
-
-            // Processa os comandos até a linha atual
-            while ((comando = lista.getNextCommand()) != null)
+            if (valorRegistrador == null)
             {
-                String[] partes = comando.split(" ");
-                int linhaComando = Integer.parseInt(partes[0]);
+                System.out.println("Registrador " + x + "não definido.");
+                System.out.println("Linha "+comandoLinha);
+                return;
+            }
 
-                // Se a linha do comando estiver entre a linha de destino e a linha atual
-                if (linhaComando >= linhaDestinoNumero && linhaComando <= linhaAtual){
-                    // Chama a função de interpretação do comando
-                    verificaComando.toInterpretacao(comando);
+            if (isNumero(linhaDestino))
+            {
+                try
+                {
+                    linhaDestinoNumero = Integer.parseInt(linhaDestino);
+                }catch (Exception ex)
+                {
+                    throw new Exception("Erro ao converter.");
+                }
+            } else
+            {
+                linhaDestinoNumero = getValorRegistrador(linhaDestino.charAt(0));
+                if(linhaDestinoNumero == null)
+                {
+                    System.out.println("Registrador " + linhaDestino + "não definido.");
+                    System.out.println("Linha "+comandoLinha);
+                    return;
                 }
             }
-        }else // Caso for zero executa os comandos restantes na lista
-        {
-            String comando;
-            lista.resetaIterator();
 
-            // Processa os comandos para frente da linha atual
-            while ((comando = lista.getNextCommand()) != null)
+            // Se o valor do registrador for zero, não entra no laço
+            LinkedList lista = verificaArquivo.getLista();
+            if (valorRegistrador != 0)
             {
-                String[] partes = comando.split(" ");
-                int linhaComando = Integer.parseInt(partes[0]);
+                String comando;
+                lista.resetaIterator();
 
-                // Se a linha do comando estiver na frente da linha atual
-                if (linhaComando > linhaAtual){
-                    verificaComando.toInterpretacao(comando);
+                // Processa os comandos até a linha atual
+                while ((comando = lista.getNextCommand()) != null)
+                {
+                    String[] partes = comando.split(" ");
+                    int linhaComando = Integer.parseInt(partes[0]);
+
+                    // Se a linha do comando estiver entre a linha de destino e a linha atual
+                    if (linhaComando >= linhaDestinoNumero && linhaComando <= linhaAtual)
+                    {
+                        // Chama a função de interpretação do comando
+                        verificaComando.toInterpretacao(comando);
+                    }
+                }
+            } else // Caso for zero executa os comandos restantes na lista
+            {
+                String comando;
+                lista.resetaIterator();
+
+                // Processa os comandos para frente da linha atual
+                while ((comando = lista.getNextCommand()) != null)
+                {
+                    String[] partes = comando.split(" ");
+                    int linhaComando = Integer.parseInt(partes[0]);
+
+                    // Se a linha do comando estiver na frente da linha atual
+                    if (linhaComando > linhaAtual)
+                    {
+                        verificaComando.toInterpretacao(comando);
+                    }
                 }
             }
+        }catch (Exception e)
+        {
+            throw new Exception("Erro: impossível executar o comando jnz.");
         }
     }
 
     // Exibe o valor do registrador x em tela
-    public void executeOut(char x)
+    public void executeOut(char x, String comando) throws Exception
     {
-        Integer valorX = getValorRegistrador(x);
-        if(valorX == null)
+        try
         {
-            System.out.println(String.format("Erro: registrador %s inválido.\n", x));
-            return;
+            Integer valorX = getValorRegistrador(x);
+            if (valorX == null)
+            {
+                System.out.printf("Erro: registrador %s inválido.%n", x);
+                System.out.println("Linha: " + comando);
+                return;
+            }
+            System.out.println(getValorRegistrador(x));
+        }catch (Exception e)
+        {
+            throw new Exception("Erro: impossível executar comando out.");
         }
-        System.out.println(getValorRegistrador(x));
+    }
+
+    public void clearRegistradores()
+    {
+        for(int i = 0; i<26; i++)
+        {
+            registradores[i] = null;
+        }
     }
 
     // Métodos auxiliares privados
-    private Integer getValorRegistrador(char reg) {
-        switch (reg) {
-            case 'a': return a;
-            case 'b': return b;
-            case 'c': return c;
-            case 'd': return d;
-            case 'e': return e;
-            case 'f': return f;
-            case 'g': return g;
-            case 'h': return h;
-            case 'i': return i;
-            case 'j': return j;
-            case 'k': return k;
-            case 'l': return l;
-            case 'm': return m;
-            case 'n': return n;
-            case 'o': return o;
-            case 'p': return p;
-            case 'q': return q;
-            case 'r': return r;
-            case 's': return s;
-            case 't': return t;
-            case 'u': return u;
-            case 'v': return v;
-            case 'w': return w;
-            case 'x': return x;
-            case 'y': return y;
-            case 'z': return z;
-            default: return null; // Caso inválido
-        }
+
+    // Retorna o valor de determinado registrador ou null
+    private Integer getValorRegistrador(char reg)
+    {
+        return registradores[reg - 'a'];
     }
 
-    private void setValorRegistrador(char reg, int valor) {
-        switch (reg) {
-            case 'a': a = valor; break;
-            case 'b': b = valor; break;
-            case 'c': c = valor; break;
-            case 'd': d = valor; break;
-            case 'e': e = valor; break;
-            case 'f': f = valor; break;
-            case 'g': g = valor; break;
-            case 'h': h = valor; break;
-            case 'i': i = valor; break;
-            case 'j': j = valor; break;
-            case 'k': k = valor; break;
-            case 'l': l = valor; break;
-            case 'm': m = valor; break;
-            case 'n': n = valor; break;
-            case 'o': o = valor; break;
-            case 'p': p = valor; break;
-            case 'q': q = valor; break;
-            case 'r': r = valor; break;
-            case 's': s = valor; break;
-            case 't': t = valor; break;
-            case 'u': u = valor; break;
-            case 'v': v = valor; break;
-            case 'w': w = valor; break;
-            case 'x': x = valor; break;
-            case 'y': y = valor; break;
-            case 'z': z = valor; break;
-        }
+    // Define o valor de determinado registrador
+    private void setValorRegistrador(char reg, int valor)
+    {
+        registradores[reg - 'a'] = valor;
     }
 
     // Verifica se o valor é um número
-    private boolean isNumero(String str) {
-        try {
+    private boolean isNumero(String str)
+    {
+        try
+        {
             Integer.parseInt(str);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e)
+        {
             return false;
         }
     }

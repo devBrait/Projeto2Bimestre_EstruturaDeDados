@@ -1,0 +1,9 @@
+10 mov x 10
+20 mov y 3
+30 mul x y
+40 mov z 20
+50 add z x
+60 dec y
+70 jnz y 30
+80 mov z
+90 out z
