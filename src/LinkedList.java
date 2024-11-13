@@ -11,6 +11,7 @@ public class LinkedList{
     private boolean isModified;
     private Node current;
     private int linhaAnterior;
+    private int indiceInicial = 0;
 
     public LinkedList()
     {
@@ -74,7 +75,8 @@ public class LinkedList{
         Node atual = head;
         Node anterior = null;
 
-        while (atual != null && atual.getNumeroLinha() < lineNumber) {
+        while (atual != null && atual.getNumeroLinha() < lineNumber)
+        {
             anterior = atual;
             atual = atual.getProximo();
         }
@@ -202,17 +204,35 @@ public class LinkedList{
     // Exibe o conteúdo da lista com números de linha
     public void retornaLista() throws Exception
     {
-        Node current = head;
-
         if (head == null)
         {
             throw new Exception("Nenhum arquivo foi carregado!");
         }
 
-        while (current != null)
+        Node current = head;
+        int contador = 0;
+
+        // Avança até o índice inicial
+        for (int i = 0; i < indiceInicial && current != null; i++)
+        {
+            current = current.getProximo();
+        }
+
+        // Exibe 20 comandos ou até o final da lista
+        while (contador < 20 && current != null)
         {
             System.out.printf("%s%n", current.getComando());
             current = current.getProximo();
+            contador++;
+        }
+
+        // Atualiza o índice inicial para a próxima chamada
+        indiceInicial += 20;
+
+        // Se atingir o fim da lista, redefine para o início
+        if (current == null)
+        {
+            indiceInicial = 0;
         }
     }
 
@@ -252,16 +272,14 @@ public class LinkedList{
     // Encontra e retorna o conteúdo da linha pelo número dela
     public String findLineByNumber(int lineNumber)
     {
-        // Inicia a busca pelo nó head
         Node atual = head;
 
         // Percorre a lista de nós
         while (atual != null) {
             // Verifica se o número da linha atual corresponde ao `lineNumber` desejado
             if (atual.getNumeroLinha() == lineNumber) {
-                return atual.getComando(); // Retorna o conteúdo da linha encontrada
+                return atual.getComando();
             }
-            // Avança para o próximo nó
             atual = atual.getProximo();
         }
 
