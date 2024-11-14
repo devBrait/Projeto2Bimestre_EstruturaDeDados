@@ -14,9 +14,16 @@ public class VerificaComando {
         this.interpretador = interpretador;
     }
 
+    // Metodo que define qual comando foi informado e manda para o interpretador
     public void toInterpretacao(String comando)
     {
         String[] partes = comando.split(" ");
+        if(partes.length < 3)
+        {
+            System.out.println("Linha sem um comando válido.");
+            System.out.println("Linha: "+comando);
+            return;
+        }
         String instrucao = partes[1].toLowerCase();
 
         switch (instrucao) {
@@ -25,14 +32,15 @@ public class VerificaComando {
                 {
                     try
                     {
-                        interpretador.executeMov(partes[2], partes[3], comando);
+                        interpretador.executeMov(partes[2], partes[3], comando); // Executa o comando de mov
                     }catch (Exception e)
                     {
                         System.out.println(e.getMessage());
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando mov.");
+                    System.out.println("Erro: formato incorreto para o comando mov: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "inc":
@@ -40,7 +48,7 @@ public class VerificaComando {
                 {
                     try
                     {
-                        interpretador.executeInc(partes[2], comando);
+                        interpretador.executeInc(partes[2], comando); // Executa o comando de inc
                     }
                     catch (Exception e)
                     {
@@ -48,7 +56,8 @@ public class VerificaComando {
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando inc.");
+                    System.out.println("Erro: formato incorreto para o comando inc: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "dec":
@@ -56,14 +65,15 @@ public class VerificaComando {
                 {
                     try
                     {
-                    interpretador.executeDec(partes[2], comando);
+                    interpretador.executeDec(partes[2], comando); // Executa o comando de dec
                     }catch (Exception e)
                     {
                         System.out.println(e.getMessage());
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando dec.");
+                    System.out.println("Erro: formato incorreto para o comando dec: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "add":
@@ -71,7 +81,7 @@ public class VerificaComando {
                 {
                     try
                     {
-                        interpretador.executeAdd(partes[2].charAt(0), partes[3], comando);
+                        interpretador.executeAdd(partes[2].charAt(0), partes[3], comando); // Executa o comando de add
                     }
                     catch (Exception e)
                     {
@@ -79,7 +89,8 @@ public class VerificaComando {
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando add.");
+                    System.out.println("Erro: formato incorreto para o comando add: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "sub":
@@ -87,14 +98,15 @@ public class VerificaComando {
                 {
                     try
                     {
-                        interpretador.executeSub(partes[2].charAt(0), partes[3], comando);
+                        interpretador.executeSub(partes[2].charAt(0), partes[3], comando); // Executa o comando de sub
                     }catch (Exception e)
                     {
                         System.out.println(e.getMessage());
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando sub.");
+                    System.out.println("Erro: formato incorreto para o comando sub: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "mul":
@@ -102,7 +114,7 @@ public class VerificaComando {
                 {
                     try
                     {
-                    interpretador.executeMul(partes[2].charAt(0), partes[3], comando);
+                    interpretador.executeMul(partes[2].charAt(0), partes[3], comando); // Executa o comando de mul
                     }
                     catch (Exception e)
                     {
@@ -110,7 +122,8 @@ public class VerificaComando {
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando mul.");
+                    System.out.println("Erro: formato incorreto para o comando mul: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "div":
@@ -118,14 +131,15 @@ public class VerificaComando {
                 {
                     try
                     {
-                    interpretador.executeDiv(partes[2].charAt(0), partes[3], comando);
+                    interpretador.executeDiv(partes[2].charAt(0), partes[3], comando); // Executa o comando de div
                     }catch (Exception e)
                     {
                         System.out.println(e.getMessage());
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando div.");
+                    System.out.println("Erro: formato incorreto para o comando div: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "jnz":
@@ -137,7 +151,7 @@ public class VerificaComando {
                         int linhaAtual = Integer.parseInt(partes[0]);
                         try
                         {
-                            interpretador.executeJnz(partes[2].charAt(0), linhaDestino, linhaAtual, comando);
+                            interpretador.executeJnz(partes[2].charAt(0), linhaDestino, linhaAtual, comando); // Executa o comando de jnz
                         }catch (Exception e)
                         {
                             System.out.println(e.getMessage());
@@ -145,10 +159,12 @@ public class VerificaComando {
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Erro: linha inválida para o comando jnz.");
+                        System.out.println("Linha: "+comando);
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando jnz.");
+                    System.out.println("Erro: formato incorreto para o comando jnz: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
             case "out":
@@ -156,7 +172,7 @@ public class VerificaComando {
                 {
                     try
                     {
-                        interpretador.executeOut(partes[2].charAt(0), comando);
+                        interpretador.executeOut(partes[2].charAt(0), comando); // Executa o comando de out
                     }
                     catch (Exception e)
                     {
@@ -164,17 +180,20 @@ public class VerificaComando {
                     }
                 } else
                 {
-                    System.out.println("Erro: formato incorreto para o comando out.");
+                    System.out.println("Erro: formato incorreto para o comando out: ");
+                    System.out.println("Linha: "+comando);
                 }
                 break;
-
             default:
-                System.out.println("Erro: comando inválido.");
+                System.out.println("Erro: comando inválido."); // Caso o comando seja inválido
+                System.out.println("Linha: "+comando);
                 break;
         }
     }
-    public void clearRegistradores()
+
+    // Define todos os registradores como null
+    public void limpaRegistradores()
     {
-        interpretador.clearRegistradores();
+        interpretador.limpaRegistradores();
     }
 }

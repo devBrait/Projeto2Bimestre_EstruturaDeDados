@@ -8,48 +8,81 @@ Nome: Vinícius Brait Lorimier RA: 10420046
 public class LinkedList{
 
     private Node head;
-    private boolean isModified;
-    private Node current;
+    private Node headErros;
+    private boolean modificado;
+    private Node atual;
     private int linhaAnterior;
     private int indiceInicial = 0;
+    private boolean erroSequencia = false;
+    private boolean erroSemLinha = false;
 
     public LinkedList()
     {
         this.linhaAnterior = -1;
         this.head = null;
-        this.isModified = false;
+        this.modificado = false;
     }
 
     // Adiciona uma nova linha no final da lista
-    public void insert(String line) throws Exception
+    public void insere(String line)
     {
         String[] partesLinha = line.split(" ");
-        int linha = Integer.parseInt(partesLinha[0]);
-        if(linha >= 0 && linha > linhaAnterior)
+        int linha = -1;
+        try
         {
-           linhaAnterior = linha;
+            linha = Integer.parseInt(partesLinha[0]);
+        }catch(NumberFormatException e)
+        {
+            erroSemLinha = true; // Define flag de comando sem linha
+        }
 
-            Node newNode = new Node(line, linha);
-            if (head == null)
+        // Verifica a sequência
+        if (linha >= 0 && linha > linhaAnterior)
+        {
+            linhaAnterior = linha;
+        } else
+        {
+            erroSequencia = true; // Define flag de sequência incorreta
+
+            // Node para armazenar todos os erros
+            Node erros = new Node(line, linha);
+            if (headErros == null)
             {
-                head = newNode;
+                headErros = erros;
             } else
             {
-                Node atual = head;
-                while (atual.getProximo() != null)
+                Node atualErro = headErros;
+                while (atualErro.getProximo() != null)
                 {
-                    atual = atual.getProximo();
+                    atualErro = atualErro.getProximo();
                 }
-                atual.setProximo(newNode);
+                atualErro.setProximo(erros);
             }
-        }else
+            // Atualiza linhaAnterior apenas se a linha for maior que o anterior
+            if (linha > linhaAnterior)
+            {
+                linhaAnterior = linha;
+            }
+        }
+
+        // Cria um novo nó e adiciona à lista
+        Node newNode = new Node(line, linha);
+        if (head == null)
         {
-            throw new Exception("Impossível gravar arquivo com essa sequência de linhas!");
+            head = newNode;
+        } else
+        {
+            Node atual = head;
+            while (atual.getProximo() != null)
+            {
+                atual = atual.getProximo();
+            }
+            atual.setProximo(newNode);
         }
     }
 
     // Adiciona ou sobrescreve uma linha em uma posição específica
-    public void insertAt(String line, int lineNumber)
+    public void insereEspecifica(String line, int lineNumber)
     {
         // Verifica se o número da linha é válido
         if (lineNumber < 0)
@@ -65,7 +98,7 @@ public class LinkedList{
         {
             newNode.setProximo(head);
             head = newNode;
-            isModified = true;
+            modificado = true;
             System.out.println("Linha " + lineNumber + " inserida:");
             System.out.println(line);
             return;
@@ -85,66 +118,114 @@ public class LinkedList{
         if (atual != null && atual.getNumeroLinha() == lineNumber)
         {
             System.out.println("Linha " + lineNumber + " já existe:");
-            System.out.println(findLineByNumber(lineNumber));
+            System.out.println(encontraLinhaNumero(lineNumber));
             System.out.println("Atualizada para:");
             System.out.println(line);
             atual.setComando(line);  // Sobrescreve o comando da linha existente
-            isModified = true;
+            modificado = true;
         } else
         {
             // Insere o novo nó na posição correta
             newNode.setProximo(atual);
             anterior.setProximo(newNode);
-            isModified = true;
+            modificado = true;
             System.out.println("Linha " + lineNumber + " inserida:");
             System.out.println(line);
         }
     }
 
     // Deleta uma linha em uma posição específica
-    public void delete(int lineNumber) {
+    public void deleta(int lineNumber)
+    {
         if (head == null)
         {
             System.out.println("A lista está vazia!");
             return;
         }
 
-        // Caso especial: remoção da primeira linha
-        if (head.getNumeroLinha() == lineNumber)
-        {
-            System.out.println("Linha " + lineNumber + " removida:");
-            System.out.println(findLineByNumber(lineNumber));
-            head = head.getProximo();
-            isModified = true;
-            return;
-        }
-
+        boolean achou = false;
         Node atual = head;
         Node anterior = null;
 
-        // Procura pela linha na lista
-        while (atual != null && atual.getNumeroLinha() != lineNumber)
+        // Itera pela lista para procurar e remover todas as ocorrências da linha
+        while (atual != null)
         {
-            anterior = atual;
+            if (atual.getNumeroLinha() == lineNumber)
+            {
+                achou = true;
+
+                // Verifica se a linha removida está na lista de erros
+                verificaErroRemovido(lineNumber);
+
+                // Se a linha a ser removida for a primeira da lista
+                if (anterior == null)
+                {
+                    System.out.println("Linha " + lineNumber + " removida:");
+                    System.out.println(encontraLinhaNumero(lineNumber));
+                    head = atual.getProximo();
+                } else
+                {
+                    System.out.println("Linha " + lineNumber + " removida:");
+                    System.out.println(encontraLinhaNumero(lineNumber));
+                    anterior.setProximo(atual.getProximo());
+                }
+                modificado = true;
+            } else
+            {
+                anterior = atual;
+            }
             atual = atual.getProximo();
         }
 
-        // Se a linha não for encontrada
-        if (atual == null)
+        // Se nenhuma linha foi removida
+        if (!achou)
         {
             System.out.println("Linha " + lineNumber + " não existe.");
+        }
+
+        // Verifica se a lista de erros está vazia
+        verificaTodosErrosRemovidos();
+    }
+
+    // Verifica se a linha que foi removida está na lista de erros e a remove se necessário
+    private void verificaErroRemovido(int lineNumber)
+    {
+        Node atualErro = headErros;
+        Node anteriorErro = null;
+
+        while (atualErro != null)
+        {
+            if (atualErro.getNumeroLinha() == lineNumber)
+            {
+                if (anteriorErro == null)
+                {
+                    headErros = atualErro.getProximo();
+                } else
+                {
+                    anteriorErro.setProximo(atualErro.getProximo());
+                }
+                return;
+            }
+            anteriorErro = atualErro;
+            atualErro = atualErro.getProximo();
+        }
+    }
+
+    // Verifica se todas as linhas de erro foram removidas e exibe a mensagem correspondente
+    private void verificaTodosErrosRemovidos()
+    {
+        Node atualErro = headErros;
+        if (atualErro == null)
+        {
+            erroSequencia = false;
         } else
         {
-            // Remove a linha
-            System.out.println("Linha " + lineNumber + " removida:");
-            System.out.println(findLineByNumber(lineNumber));
-            anterior.setProximo(atual.getProximo());
-            isModified = true;
+            exibeErros();
         }
     }
 
     // Deleta todas as linhas dentro do intervalo
-    public void deleteInRange(int linhaInicial, int linhaFinal)
+    public void deletaMul(int linhaInicial, int linhaFinal)
     {
         // Verifica se o intervalo é válido
         if (linhaInicial <= 0 || linhaFinal <= 0 || linhaInicial > linhaFinal)
@@ -168,33 +249,37 @@ public class LinkedList{
         // Percorre a lista para remover as linhas dentro do intervalo
         while (atual != null)
         {
-            // Verifica se a linha está dentro do intervalo de exclusão
+            // Verifica se a linha está dentro do intervalo
             if (atual.getNumeroLinha() >= linhaInicial && atual.getNumeroLinha() <= linhaFinal)
             {
                 // Caso especial: remoção da linha no início da lista
                 if (anterior == null)
                 {
-                    head = atual.getProximo(); // Remove o primeiro nó
+                    head = atual.getProximo();
                 } else
                 {
-                    anterior.setProximo(atual.getProximo()); // Remove a linha do meio ou final
+                    anterior.setProximo(atual.getProximo());
                 }
 
                 resultado.append(atual.getComando()).append("\n");
                 linhasRemovidas = true;
+
+                // Verifica e remove a linha da lista de erros
+                verificaErroRemovido(atual.getNumeroLinha());
             } else
             {
-                anterior = atual; // Avança o ponteiro anterior
+                anterior = atual;
             }
 
-            atual = atual.getProximo(); // Avança para o próximo nó
+            atual = atual.getProximo();
         }
 
         // Verifica se alguma linha foi removida
         if (linhasRemovidas)
         {
             System.out.print(resultado);
-            isModified = true;
+            modificado = true;
+            verificaTodosErrosRemovidos();
         } else
         {
             System.out.println("Nenhuma linha encontrada no intervalo especificado.");
@@ -202,7 +287,7 @@ public class LinkedList{
     }
 
     // Exibe o conteúdo da lista com números de linha
-    public void retornaLista() throws Exception
+    public void exibeLista() throws Exception
     {
         if (head == null)
         {
@@ -210,7 +295,7 @@ public class LinkedList{
         }
 
         Node current = head;
-        int contador = 0;
+        int contaLinhas = 0;
 
         // Avança até o índice inicial
         for (int i = 0; i < indiceInicial && current != null; i++)
@@ -219,11 +304,11 @@ public class LinkedList{
         }
 
         // Exibe 20 comandos ou até o final da lista
-        while (contador < 20 && current != null)
+        while (contaLinhas < 20 && current != null)
         {
             System.out.printf("%s%n", current.getComando());
             current = current.getProximo();
-            contador++;
+            contaLinhas++;
         }
 
         // Atualiza o índice inicial para a próxima chamada
@@ -236,41 +321,21 @@ public class LinkedList{
         }
     }
 
-    public boolean isModified() {
-        return isModified;
-    }
-
-    public void clearModification() {
-        isModified = false;
-    }
-
-    // Metodo para apagar (limpar) a lista
-    public void clearList()
-    {
-        head = null;
-        isModified = false;
-        linhaAnterior = -1;
-    }
-
-    public void resetaIterator() {
-        current = head; // Reinicia para o início da lista
-    }
-
     // Metodo para obter o próximo comando
-    public String getNextCommand()
+    public String proximoComando()
     {
-        if (current == null)
+        if (atual == null)
         {
-            return null; // Retorna null se não houver mais itens
+            return null;
         }
 
-        String comando = current.getComando(); // Obtém o comando atual
-        current = current.getProximo(); // Avança para o próximo nó
-        return comando; // Retorna o comando
+        String comando = atual.getComando();
+        atual = atual.getProximo();
+        return comando;
     }
 
     // Encontra e retorna o conteúdo da linha pelo número dela
-    public String findLineByNumber(int lineNumber)
+    public String encontraLinhaNumero(int lineNumber)
     {
         Node atual = head;
 
@@ -287,4 +352,52 @@ public class LinkedList{
         return "Linha " + lineNumber + " não encontrada.";
     }
 
+    // Metodo para retornar se a lista foi modificada
+    public boolean foiModificado() {
+        return modificado;
+    }
+
+    // Metodo para limpar a lista de modificações
+    public void limpaModificacao() {
+        modificado = false;
+    }
+
+    // Metodo para apagar (limpar) a lista
+    public void limpaLista()
+    {
+        head = null;
+        headErros = null;
+        modificado = false;
+        linhaAnterior = -1;
+    }
+
+    // Metodo para ir para o início da lista
+    public void resetaIterator()
+    {
+        atual = head;
+    }
+
+    // Metodo para retornar erro de sequência
+    public boolean retornaErroSequencia()
+    {
+        return erroSequencia;
+    }
+
+    // Metodo para retornar erro de código sem linha
+    public boolean retornaErroSemLinha()
+    {
+        return erroSemLinha;
+    }
+
+    // Metodo para exibir todos os erros
+    public void exibeErros()
+    {
+        Node atualErro = headErros;
+        System.out.println("Aviso: arquivo contém sequência incorreta de linhas. \nLinhas incorretas:");
+        while (atualErro != null)
+        {
+            System.out.println(atualErro.getComando());
+            atualErro = atualErro.getProximo();
+        }
+    }
 }

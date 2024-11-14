@@ -33,17 +33,22 @@ public class Interpretador {
         {
             if (isNumero(y))
             {
-                setValorRegistrador(x.charAt(0), Integer.parseInt(y));
-            } else if (getValorRegistrador(y.charAt(0)) == null)
+                defineValorRegistrador(x.charAt(0), Integer.parseInt(y));
+            } else if (retornaValorRegistrador(y.charAt(0)) == null)
             {
                 System.out.printf("Erro: registrador %s inválido.%n", y);
                 System.out.println("Linha "+comando);
                 return;
             } else
             {
-                setValorRegistrador(x.charAt(0), getValorRegistrador(y.charAt(0)));
+                defineValorRegistrador(x.charAt(0), retornaValorRegistrador(y.charAt(0)));
             }
-        } catch (Exception ex)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception ex)
         {
             throw new Exception("Erro: impossível executar o comando mov.");
         }
@@ -60,14 +65,20 @@ public class Interpretador {
                 return;
             }
 
-            Integer valorX = getValorRegistrador(x.charAt(0));
+            Integer valorX = retornaValorRegistrador(x.charAt(0));
 
-            if (valorX == null) {
+            if (valorX == null)
+            {
                 System.out.println("Registrador " + x + "não definido ainda.");
                 System.out.println("Linha "+comando);
             }
-            setValorRegistrador(x.charAt(0), valorX + 1);
-        }catch (Exception ex)
+            defineValorRegistrador(x.charAt(0), valorX + 1);
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception ex)
         {
             throw new Exception("Erro: impossível executar o comando inc.");
         }
@@ -84,14 +95,19 @@ public class Interpretador {
                 return;
             }
 
-            Integer valorX = getValorRegistrador(x.charAt(0));
+            Integer valorX = retornaValorRegistrador(x.charAt(0));
             if (valorX == null)
             {
                 System.out.println("Registrador " + x + "não definido ainda.");
                 System.out.println("Linha "+comando);
             }
-            setValorRegistrador(x.charAt(0), valorX - 1);
-        }catch (Exception ex)
+            defineValorRegistrador(x.charAt(0), valorX - 1);
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception ex)
         {
             throw new Exception("Erro: impossível executar o comando dec.");
         }
@@ -102,7 +118,7 @@ public class Interpretador {
     {
         try
         {
-            Integer valorX = getValorRegistrador(x);
+            Integer valorX = retornaValorRegistrador(x);
             if (valorX == null)
             {
                 System.out.printf("Erro: registrador %s inválido.%n", x);
@@ -112,16 +128,21 @@ public class Interpretador {
 
             if (isNumero(y))
             {
-                setValorRegistrador(x, getValorRegistrador(x) + Integer.parseInt(y));
-            } else if (getValorRegistrador(y.charAt(0)) == null)
+                defineValorRegistrador(x, retornaValorRegistrador(x) + Integer.parseInt(y));
+            } else if (retornaValorRegistrador(y.charAt(0)) == null)
             {
                 System.out.println("Registrador " + y + "não definido ainda.");
                 System.out.println("Linha "+comando);
             } else
             {
-                setValorRegistrador(x, getValorRegistrador(x) + getValorRegistrador(y.charAt(0)));
+                defineValorRegistrador(x, retornaValorRegistrador(x) + retornaValorRegistrador(y.charAt(0)));
             }
-        }catch (Exception ex)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception ex)
         {
             throw new Exception("Erro: impossível executar o comando add.");
         }
@@ -132,7 +153,7 @@ public class Interpretador {
     {
         try
         {
-            Integer valorX = getValorRegistrador(x);
+            Integer valorX = retornaValorRegistrador(x);
             if (valorX == null)
             {
                 System.out.printf("Erro: registrador %s inválido.%n", x);
@@ -142,16 +163,21 @@ public class Interpretador {
 
             if (isNumero(y))
             {
-                setValorRegistrador(x, getValorRegistrador(x) - Integer.parseInt(y));
-            } else if (getValorRegistrador(y.charAt(0)) == null)
+                defineValorRegistrador(x, retornaValorRegistrador(x) - Integer.parseInt(y));
+            } else if (retornaValorRegistrador(y.charAt(0)) == null)
             {
                 System.out.println("Registrador " + y + "não definido ainda.");
                 System.out.println("Linha "+comando);
             } else
             {
-                setValorRegistrador(x, getValorRegistrador(x) - getValorRegistrador(y.charAt(0)));
+                defineValorRegistrador(x, retornaValorRegistrador(x) - retornaValorRegistrador(y.charAt(0)));
             }
-        }catch (Exception ex)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception ex)
         {
             throw new Exception("Erro: impossível executar o comando sub.");
         }
@@ -162,7 +188,7 @@ public class Interpretador {
     {
         try
         {
-            Integer valorX = getValorRegistrador(x);
+            Integer valorX = retornaValorRegistrador(x);
             if (valorX == null)
             {
                 System.out.printf("Erro: registrador %s inválido.%n", x);
@@ -172,16 +198,21 @@ public class Interpretador {
 
             if (isNumero(y))
             {
-                setValorRegistrador(x, getValorRegistrador(x) * Integer.parseInt(y));
-            } else if (getValorRegistrador(y.charAt(0)) == null)
+                defineValorRegistrador(x, retornaValorRegistrador(x) * Integer.parseInt(y));
+            } else if (retornaValorRegistrador(y.charAt(0)) == null)
             {
                 System.out.println("Registrador " + y + "não definido ainda.");
                 System.out.println("Linha "+comando);
             } else
             {
-                setValorRegistrador(x, getValorRegistrador(x) * getValorRegistrador(y.charAt(0)));
+                defineValorRegistrador(x, retornaValorRegistrador(x) * retornaValorRegistrador(y.charAt(0)));
             }
-        }catch (Exception e)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception e)
         {
             throw new Exception("Erro: impossível executar o comando mul.");
         }
@@ -192,7 +223,7 @@ public class Interpretador {
     {
         try
         {
-            Integer valorX = getValorRegistrador(x);
+            Integer valorX = retornaValorRegistrador(x);
 
             if (valorX == null)
             {
@@ -210,11 +241,11 @@ public class Interpretador {
                     System.out.println("Erro: Divisão por zero!");
                     return;
                 }
-                setValorRegistrador(x, valorX / valorY);
+                defineValorRegistrador(x, valorX / valorY);
             } else
             {
                 // Se y não é um número, verifica se é um registrador válido
-                Integer valorYRegistrador = getValorRegistrador(y.charAt(0));
+                Integer valorYRegistrador = retornaValorRegistrador(y.charAt(0));
                 if (valorYRegistrador == null)
                 {
                     System.out.printf("Erro: registrador %s inválido.%n", y);
@@ -229,9 +260,14 @@ public class Interpretador {
                     return;
                 }
 
-                setValorRegistrador(x, valorX / valorYRegistrador);
+                defineValorRegistrador(x, valorX / valorYRegistrador);
             }
-        }catch (Exception e)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception e)
         {
             throw new Exception("Erro: impossível executar o comando div.");
         }
@@ -242,7 +278,7 @@ public class Interpretador {
             throws Exception
     {
         try {
-            Integer valorRegistrador = getValorRegistrador(x);
+            Integer valorRegistrador = retornaValorRegistrador(x);
             Integer linhaDestinoNumero = null;
 
             if (valorRegistrador == null)
@@ -254,16 +290,10 @@ public class Interpretador {
 
             if (isNumero(linhaDestino))
             {
-                try
-                {
-                    linhaDestinoNumero = Integer.parseInt(linhaDestino);
-                }catch (Exception ex)
-                {
-                    throw new Exception("Erro ao converter.");
-                }
+                linhaDestinoNumero = Integer.parseInt(linhaDestino);
             } else
             {
-                linhaDestinoNumero = getValorRegistrador(linhaDestino.charAt(0));
+                linhaDestinoNumero = retornaValorRegistrador(linhaDestino.charAt(0));
                 if(linhaDestinoNumero == null)
                 {
                     System.out.println("Registrador " + linhaDestino + "não definido.");
@@ -273,14 +303,14 @@ public class Interpretador {
             }
 
             // Se o valor do registrador for zero, não entra no laço
-            LinkedList lista = verificaArquivo.getLista();
+            LinkedList lista = verificaArquivo.retornaLista();
             if (valorRegistrador != 0)
             {
                 String comando;
                 lista.resetaIterator();
 
                 // Processa os comandos até a linha atual
-                while ((comando = lista.getNextCommand()) != null)
+                while ((comando = lista.proximoComando()) != null)
                 {
                     String[] partes = comando.split(" ");
                     int linhaComando = Integer.parseInt(partes[0]);
@@ -298,7 +328,7 @@ public class Interpretador {
                 lista.resetaIterator();
 
                 // Processa os comandos para frente da linha atual
-                while ((comando = lista.getNextCommand()) != null)
+                while ((comando = lista.proximoComando()) != null)
                 {
                     String[] partes = comando.split(" ");
                     int linhaComando = Integer.parseInt(partes[0]);
@@ -310,7 +340,12 @@ public class Interpretador {
                     }
                 }
             }
-        }catch (Exception e)
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comandoLinha);
+        }
+        catch (Exception e)
         {
             throw new Exception("Erro: impossível executar o comando jnz.");
         }
@@ -321,21 +356,27 @@ public class Interpretador {
     {
         try
         {
-            Integer valorX = getValorRegistrador(x);
+            Integer valorX = retornaValorRegistrador(x);
             if (valorX == null)
             {
                 System.out.printf("Erro: registrador %s inválido.%n", x);
                 System.out.println("Linha: " + comando);
                 return;
             }
-            System.out.println(getValorRegistrador(x));
-        }catch (Exception e)
+            System.out.println(retornaValorRegistrador(x));
+        }catch (IllegalArgumentException ex)
+        {
+            System.out.println(ex.getMessage());
+            System.out.println("Linha: "+comando);
+        }
+        catch (Exception e)
         {
             throw new Exception("Erro: impossível executar comando out.");
         }
     }
 
-    public void clearRegistradores()
+    // Define todos registradores como null
+    public void limpaRegistradores()
     {
         for(int i = 0; i<26; i++)
         {
@@ -346,15 +387,29 @@ public class Interpretador {
     // Métodos auxiliares privados
 
     // Retorna o valor de determinado registrador ou null
-    private Integer getValorRegistrador(char reg)
+    private Integer retornaValorRegistrador(char reg)
     {
-        return registradores[reg - 'a'];
+        int indice = reg - 'a';
+        if(indice >= 0 && indice < 26)
+        {
+            return registradores[indice];
+        }else
+        {
+            throw new IllegalArgumentException("Erro: registrador informado inválido. Use letras de A até Z");
+        }
     }
 
     // Define o valor de determinado registrador
-    private void setValorRegistrador(char reg, int valor)
+    private void defineValorRegistrador(char reg, int valor)
     {
-        registradores[reg - 'a'] = valor;
+        int indice = reg - 'a';
+        if(indice >= 0 && indice < 26)
+        {
+            registradores[indice] = valor;
+        }else
+        {
+            throw new IllegalArgumentException("Erro: registrador informado inválido. Use letras de A até Z");
+        }
     }
 
     // Verifica se o valor é um número

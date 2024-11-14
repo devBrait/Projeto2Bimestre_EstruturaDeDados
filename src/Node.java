@@ -10,6 +10,7 @@ public class Node {
     private Node proximo;
     private int numeroLinha;
 
+    // Construtor
     public Node(String comando, int numeroLinha)
     {
         this.comando = comando;
@@ -18,29 +19,35 @@ public class Node {
     }
 
     // Métodos get e set de comandos
-    public String getComando() {
+    public String getComando()
+    {
         return comando;
     }
 
-    public void setComando(String comando) {
+    public void setComando(String comando)
+    {
         this.comando = comando;
     }
 
-    // Métodos get e set para `proximo`
-    public Node getProximo() {
+    // Métodos get e set para proximo
+    public Node getProximo()
+    {
         return proximo;
     }
 
-    public void setProximo(Node proximo) {
+    public void setProximo(Node proximo)
+    {
         this.proximo = proximo;
     }
 
     // Métodos get e set  de numeroLinha
-    public int getNumeroLinha() {
+    public int getNumeroLinha()
+    {
         return numeroLinha;
     }
 
-    public void setNumeroLinha(int numeroLinha) {
+    public void setNumeroLinha(int numeroLinha)
+    {
         this.numeroLinha = numeroLinha;
     }
 }

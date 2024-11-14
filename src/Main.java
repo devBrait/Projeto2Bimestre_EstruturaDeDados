@@ -21,23 +21,26 @@ Referências:
  */
 import java.util.Scanner;
 
-public class Main {
+public class Main
+{
     public static void main(String[] args)
     {
-
+        // Instância das classes necessárias
         Scanner s = new Scanner(System.in);
         Menu menu = new Menu();
         VerificaEntrada verificaEntrada = new VerificaEntrada();
 
+        // Mensagem de boas vindas e exibe o menu de ajuda
         System.out.println("Seja bem-vindo ao nosso Intepretador de Assembly!!!\n");
         menu.exibeMenu();
 
+        // Loop para continuar solicitando input do usuário
         while(true)
         {
             System.out.print("\n> ");
             String expressao = s.nextLine().trim().toUpperCase();
 
-            verificaEntrada.isValid(expressao);
+            verificaEntrada.isValid(expressao); // verfica se expressão é válida
         }
     }
 }

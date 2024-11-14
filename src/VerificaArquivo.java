@@ -5,11 +5,14 @@ Nome: Guilherme Teodoro de Oliveira RA: 10425362
 Nome: Vinícius Brait Lorimier RA: 10420046
 
  */
+
 import java.io.*;
 import java.util.Scanner;
 
 // Realiza todas operações básicas de arquivo
 public class VerificaArquivo {
+
+    // Definição de variáveis e instâncias
     private static VerificaArquivo verificaArquivo;
     private LinkedList lista;
     private boolean arquivoCarregado;
@@ -31,15 +34,15 @@ public class VerificaArquivo {
         return verificaArquivo;
     }
 
+    // Metodo para carregar o arquivo informado
     public void carregaArquivo(String arquivo) throws Exception
     {
-        LinkedList novaLista = new LinkedList();  // Cria uma nova lista temporária vazia
+        LinkedList novaLista = new LinkedList();
         try
         {
             // Criar um BufferedReader para ler o arquivo
             BufferedReader reader = new BufferedReader(new FileReader(arquivo));
 
-            // Variável para armazenar cada linha de comando
             String comando;
 
             // Ler o arquivo linha por linha
@@ -47,11 +50,9 @@ public class VerificaArquivo {
             {
                 try
                 {
-                    // Adicionar cada linha à lista
-                    novaLista.insert(comando);
+                    novaLista.insere(comando);
                 }catch (Exception e)
                 {
-                    // Erro durante a gravação de linhas
                     throw new Exception("Erro: " + e.getMessage());
                 }
             }
@@ -64,8 +65,16 @@ public class VerificaArquivo {
             nomeArquivoCarregado = arquivo;
             arquivoCarregado = true;
             lista = novaLista;
-            // Resetar a flag de modificação após carregar o arquivo
-            lista.clearModification();
+            if(lista.retornaErroSemLinha())
+            {
+                System.out.println("Aviso: arquivo contém trechos sem linhas!");
+            }
+
+            if(lista.retornaErroSequencia())
+            {
+                lista.exibeErros();
+            }
+            lista.limpaModificacao();  // Reseta a flag de modificação após carregar o arquivo
         } catch (FileNotFoundException e)
         {
             System.out.println("Erro: Arquivo não encontrado - " + arquivo);
@@ -75,20 +84,21 @@ public class VerificaArquivo {
         }
     }
 
+    // Metodo para salvar o código feito na lista dentro do arquivo
     public void salvaCodigoFonte()
     {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivoCarregado)))
         {
-            lista.getNextCommand();
+            lista.proximoComando();
             lista.resetaIterator();
             String comando;
-            while ((comando = lista.getNextCommand()) != null)
+            while ((comando = lista.proximoComando()) != null)
             {
                 writer.write(comando);
                 writer.newLine();
             }
 
-            lista.clearModification();
+            lista.limpaModificacao();
             System.out.println("Arquivo" + " ("+nomeArquivoCarregado+") salvo com sucesso.");
 
         } catch (IOException e)
@@ -97,6 +107,7 @@ public class VerificaArquivo {
         }
     }
 
+    // Metodo para salvar arquivo específico
     public void salvaCodigoFonteEmArquivo(String arquivo) {
         File file = new File(arquivo);
 
@@ -116,10 +127,10 @@ public class VerificaArquivo {
         // Tentativa de salvar o arquivo
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
         {
-            lista.getNextCommand();
+            lista.proximoComando();
             lista.resetaIterator();
             String comando;
-            while ((comando = lista.getNextCommand()) != null)
+            while ((comando = lista.proximoComando()) != null)
             {
                 writer.write(comando);
                 writer.newLine();
@@ -132,21 +143,42 @@ public class VerificaArquivo {
         }
     }
 
-    public LinkedList getLista() {
-        return lista; // Retorna a instância de LinkedList que contém os comandos
+    // Retorna a instância de LinkedList que contém os comandos
+    public LinkedList retornaLista()
+    {
+        return lista;
     }
 
     // Metodo para verificar se a lista foi modificada
-    public boolean isModified()
+    public boolean foiModificado()
     {
-        return lista.isModified();
+        return lista.foiModificado();
     }
 
-    public void retornaLista()
+    // Retorna se tem erros de sequência
+    public boolean retornaErroSequencia()
+    {
+        return lista.retornaErroSequencia();
+    }
+
+    // Retorna erro de código sem linha
+    public boolean retornaErroSemLinha()
+    {
+        return lista.retornaErroSemLinha();
+    }
+
+    // Exibe todos os erros em tela
+    public void exibeErros()
+    {
+        lista.exibeErros();
+    }
+
+    // Exibe toda a lista
+    public void exibeLista()
     {
         try
         {
-            lista.retornaLista();
+            lista.exibeLista();
         } catch (Exception e)
         {
            if(arquivoCarregado)
@@ -159,16 +191,17 @@ public class VerificaArquivo {
         }
     }
 
+    // Define a lista para o default
     public void limpaLista(){
-        lista.clearList();
+        lista.limpaLista();
     }
 
+    // Metodo para verificar se o arquivo vai ser salvo ou não
     public boolean confirmarSalvamento()
     {
         System.out.println("Deseja salvar? (S/N)");
         String expressao = s.nextLine().trim().toUpperCase();
 
-        // Verificação correta usando equals para comparação de strings
         if (!expressao.equals("S") && !expressao.equals("N"))
         {
             System.out.println("Comando inválido. Digite S ou N!");
@@ -178,6 +211,7 @@ public class VerificaArquivo {
         return expressao.equals("S");
     }
 
+    // Metodo para comparar se o arquivo é o mesmo que já está carregado
     public boolean comparaArquivos(String arquivo)
     {
          if(arquivo.equals(nomeArquivoCarregado))
@@ -188,6 +222,7 @@ public class VerificaArquivo {
          return false;
     }
 
+    // Metodo para voltar se um arquivo já foi carregado
     public boolean arquivoCarregado()
     {
         return arquivoCarregado;

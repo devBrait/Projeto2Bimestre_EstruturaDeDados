@@ -6,6 +6,7 @@ Nome: Vinícius Brait Lorimier RA: 10420046
 
  */
 public class Menu {
+    // Exibe um menu de comandos em tela
     public void exibeMenu(){
         System.out.println("Opções disponíveis:");
         System.out.println("  LOAD <ARQUIVO.ED1>   Carrega o arquivo.");
